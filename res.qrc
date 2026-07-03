@@ -4,5 +4,7 @@
         <file>img/water.png</file>
         <file>img/frog1.png</file>
         <file>img/frog2.png</file>
+        <file>img/frog3.png</file>
+        <file>img/crown.png</file>
     </qresource>
 </RCC>

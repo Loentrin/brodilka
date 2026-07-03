@@ -16,12 +16,17 @@ ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent)
     p1Pos.setY(7*80-20+50);
     p2Pos.setX(30+50);
     p2Pos.setY(7*80+20+50);
+    p3Pos.setX(-10+50);
+    p3Pos.setY(7*80+30+50);
     p1TileX = 0;
     p1TileY = 7;
     p1BackDir = -1;
     p2TileX = 0;
     p2TileY = 7;
     p2BackDir = -1;
+    p3TileX = 0;
+    p3TileY = 7;
+    p3BackDir = -1;
     /*
       0
   3      1
@@ -31,7 +36,9 @@ ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent)
 
 void ScribbleArea::mousePressEvent(QMouseEvent *event){
     if(!canRoll) return;
-    if(event->pos().x() > 800 && event->pos().y() > 150 && event->pos().x() < 800+280 && event->pos().y() < 150+80){
+    QPoint dicePos(900, 350);
+    QSize diceSize(150, 150);
+    if(event->pos().x() > dicePos.x() && event->pos().y() > dicePos.y() && event->pos().x() < dicePos.x()+diceSize.width() && event->pos().y() < dicePos.y()+diceSize.height()){
         canRoll = 0;
         isRolling = 1;
         diceTimeRemaining = 7;
@@ -47,7 +54,9 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
     painter.setPen(QPen(Qt::black));
     QPixmap pixmapFrog1(":img/img/frog1.png");
     QPixmap pixmapFrog2(":img/img/frog2.png");
+    QPixmap pixmapFrog3(":img/img/frog3.png");
     QPixmap pixmapLilypad(":img/img/lilypad.png");
+    QPixmap pixmapCrown(":img/img/crown.png");
     QPixmap pixmapWater(":img/img/water.png");
     painter.drawPixmap(0,0,740,740, pixmapWater);
     for(int i = 0; i < 8; i++){
@@ -57,6 +66,9 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
                 painter.rotate((i+j)*90);
                 painter.drawPixmap(-40,-40,80,80, pixmapLilypad);
                 painter.rotate(-(i+j)*90);
+                if(i == 7 && j == 0){
+                    painter.drawPixmap(-20,-60,40,40, pixmapCrown);
+                }
                 painter.translate(-(i*80+50+40),-(j*80+50+40));
             }
         }
@@ -65,26 +77,45 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
     QSize frogSize(50,50);
     painter.drawPixmap(QRect(p1Pos, frogSize), pixmapFrog1);
     painter.drawPixmap(QRect(p2Pos, frogSize), pixmapFrog2);
+    if(pCount > 2){
+        painter.drawPixmap(QRect(p3Pos, frogSize), pixmapFrog3);
+    }
 
     QPoint dicePos(900, 350);
     QSize diceSize(150, 150);
     QSize dotSize(10,10);
-    painter.setFont(QFont("Helvetica", 30));
+    painter.setFont(QFont("Comic Sans MS", 30));
     painter.setPen(QPen(Qt::white));
-    painter.drawText(QPoint(800, 100), "Игрок " + QString::number(player+1) + " ходит!");
-    painter.setPen(QPen(Qt::black));
+    if(player == 0){
+        painter.drawText(QPoint(800, 100), "Зелёный игрок ходит!");
+    }
+    if(player == 1){
+        painter.drawText(QPoint(800, 100), "Синий игрок ходит!");
+    }
+    if(player == 2){
+        painter.drawText(QPoint(800, 100), "Оранжевый игрок ходит!");
+    }
 
-    painter.setBrush(QColor(Qt::red));
-    painter.drawRect(QRect(800, 150, 280, 80));
-    painter.drawText(QPoint(810, 200), "Бросить кубик");
+    if(canRoll){
+        painter.drawText(QPoint(800, 200), "Нажмите на кубик");
+         painter.drawText(QPoint(800, 250), "для броска");
+    }
+    painter.setPen(QPen(Qt::black));
 
     if(player == 0){
         painter.setBrush(QColor(Qt::green));
     }
-    else{
+    if(player == 1){
         painter.setBrush(QColor(Qt::blue));
     }
+    if(player == 2){
+        painter.setBrush(QColor("orange"));
+    }
     painter.drawRect(QRect(dicePos, diceSize));
+
+    //painter.setBrush(QColor(Qt::gray));
+    //painter.drawRect(QRect(750,640,200,100));
+
     painter.setBrush(QColor(Qt::white));
     if(diceValue == 1){
         painter.drawEllipse(QRect(dicePos.x()+diceSize.width()/2-dotSize.width(), dicePos.y()+diceSize.height()/2-dotSize.height(), dotSize.width()*2, dotSize.height()*2));
@@ -140,7 +171,10 @@ void ScribbleArea::timerEvent(QTimerEvent* event)
         movesRemaining--;
         if(movesRemaining < 0){
             canRoll = 1;
-            player = 1-player;
+            player++;
+            if(player >= pCount){
+                player = 0;
+            }
             killTimer(event->timerId());
             repaint();
             return;
@@ -211,6 +245,41 @@ void ScribbleArea::timerEvent(QTimerEvent* event)
                     p2TileY++;
                     p2Pos += QPoint(0,80);
                     p2BackDir = 0;
+                    moved = true;
+                }
+            }
+        }
+        moved = false;
+        if(player == 2){
+            if(p3TileX != 0 && !moved && p3BackDir != 3){
+                if(grid[p3TileX-1][p3TileY] == '1'){
+                    p3TileX--;
+                    p3Pos -= QPoint(80,0);
+                    p3BackDir = 1;
+                    moved = true;
+                }
+            }
+            if(p3TileX != 7 && !moved && p3BackDir != 1){
+                if(grid[p3TileX+1][p3TileY] == '1'){
+                    p3TileX++;
+                    p3Pos += QPoint(80,0);
+                    p3BackDir = 3;
+                    moved = true;
+                }
+            }
+            if(p3TileY != 0 && !moved && p3BackDir != 0){
+                if(grid[p3TileX][p3TileY-1] == '1'){
+                    p3TileY--;
+                    p3Pos -= QPoint(0,80);
+                    p3BackDir = 2;
+                    moved = true;
+                }
+            }
+            if(p3TileY != 7 && !moved && p3BackDir != 2){
+                if(grid[p3TileX][p3TileY+1] == '1'){
+                    p3TileY++;
+                    p3Pos += QPoint(0,80);
+                    p3BackDir = 0;
                     moved = true;
                 }
             }

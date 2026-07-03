@@ -13,6 +13,7 @@ class ScribbleArea : public QWidget
 
 public:
     ScribbleArea(QWidget *parent = nullptr);
+    int pCount;
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
@@ -23,9 +24,10 @@ private:
     int canRoll, isRolling;
     int diceValue;
     int diceTimeRemaining, movesRemaining;
-    QPoint p1Pos, p2Pos;
-    int p1TileX, p1TileY, p2TileX, p2TileY;
-    int p1BackDir, p2BackDir;
+    QPoint p1Pos, p2Pos, p3Pos;
+    int p1TileX, p1TileY, p2TileX, p2TileY, p3TileX, p3TileY;
+    int p1BackDir, p2BackDir, p3BackDir;
+
     QVector<QString> grid = {
     "11110001",
     "10010001",
