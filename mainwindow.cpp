@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "qpainter.h"
-#include "ui_mainwindow.h"
 #include "scribblearea.h"
 
 #include <QApplication>
@@ -11,22 +10,83 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QVBoxLayout>
 
 //! [0]
+class MenuWidget : public QWidget {
+public:
+    MenuWidget(QWidget *parent = nullptr) : QWidget(parent) {}
+protected:
+    void paintEvent(QPaintEvent *) override {
+        QPainter painter(this);
+        QPixmap water(":img/img/water.png");
+        painter.drawPixmap(rect(), water);
+    }
+};
+
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow), scribbleArea(new ScribbleArea(this))
+    : QMainWindow(parent)
+    , scribbleArea(new ScribbleArea(this))
 {
-    //setCentralWidget(scribbleArea);
-    scribbleArea->hide();
-    scribbleArea->pCount = 2;
-    setWindowState(Qt::WindowMaximized);
     setWindowTitle(":3");
-    ui->setupUi(this);
+    resize(1024, 768);
+
+    menuWidget = new MenuWidget(this);
+    menuWidget->setObjectName("menuWidget");
+
+    btn2Players = new QPushButton("Игра для 2 игроков", menuWidget);
+    btn3Players = new QPushButton("Игра для 3 игроков", menuWidget);
+    btnQuit = new QPushButton("Выход", menuWidget);
+
+    QFont titleFont("Comic Sans MS", 36, QFont::Bold);
+
+    btn2Players->setFixedSize(500, 100);
+    btn2Players->setFont(titleFont);
+    btn2Players->setStyleSheet(" background-color: red");
+    btn3Players->setFixedSize(500, 100);
+    btn3Players->setFont(titleFont);
+    btn3Players->setStyleSheet(" background-color: orange");
+    btnQuit->setFixedSize(500, 100);
+    btnQuit->setFont(titleFont);
+
+    name = new QLabel("Гонка лягушек :3", menuWidget);
+    name->setFont(titleFont);
+    name->setStyleSheet("background-color: rgba(0,255,0,150); border-radius: 15px; padding: 10px;");
+
+    QVBoxLayout *layout = new QVBoxLayout(menuWidget);
+
+    layout->addWidget(name,0,Qt::AlignCenter);
+    layout->addWidget(btn2Players, 0, Qt::AlignCenter);
+    layout->addWidget(btn3Players, 0, Qt::AlignCenter);
+    layout->addWidget(btnQuit, 0, Qt::AlignCenter);
+
+    menuWidget->setLayout(layout);
+
+    setCentralWidget(menuWidget);
+
+    connect(btn2Players, &QPushButton::clicked, this, [this]() { startGame(2); });
+    connect(btn3Players, &QPushButton::clicked, this, [this]() { startGame(3); });
+    connect(btnQuit, &QPushButton::clicked, this, &MainWindow::quitApp);
+
+    scribbleArea->hide();
 }
 
-void MainWindow::keyPressEvent(QKeyEvent* event)
+void MainWindow::startGame(int players){
+    scribbleArea->pCount = players;
+    setCentralWidget(scribbleArea);
+    scribbleArea->show();
+    menuWidget->deleteLater();
+}
+
+void MainWindow::quitApp()
 {
-    /*switch (event->key()) {
+    close();
+}
+
+
+/*void MainWindow::keyPressEvent(QKeyEvent* event)
+{
+    switch (event->key()) {
     case Qt::Key_S:
         scribbleArea->pauseBall();
         break;
@@ -41,31 +101,5 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
         break;
     default:
         QWidget::keyPressEvent(event);
-    }*/
-}
-
-void QWidget::paintEvent(QPaintEvent *event){
-    QPainter painter(this);
-    QPixmap pixmapWater(":img/img/water.png");
-    painter.drawPixmap(0,0,740,740, pixmapWater);
-}
-void MainWindow::on_pushButton_clicked()
-{
-    setCentralWidget(scribbleArea);
-    scribbleArea->show();
-}
-
-
-void MainWindow::on_pushButton_3_clicked()
-{
-    close();
-}
-
-
-void MainWindow::on_pushButton_2_clicked()
-{
-    scribbleArea->pCount = 3;
-    setCentralWidget(scribbleArea);
-    scribbleArea->show();
-}
-
+    }
+}*/

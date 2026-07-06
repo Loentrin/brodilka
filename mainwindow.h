@@ -4,11 +4,7 @@
 #include <QList>
 #include <QMainWindow>
 #include <QPushButton>
-
-namespace Ui {
-class MainWindow;
-}
-QT_END_NAMESPACE
+#include <QLabel>
 
 class ScribbleArea;
 
@@ -19,16 +15,18 @@ class MainWindow : public QMainWindow
 
 public:
     MainWindow(QWidget *parent = nullptr);
-    Ui::MainWindow *ui;
-    void keyPressEvent(QKeyEvent* event);
+    //void keyPressEvent(QKeyEvent* event);
+
 private slots:
-    void on_pushButton_clicked();
-
-    void on_pushButton_3_clicked();
-
-    void on_pushButton_2_clicked();
+    void startGame(int players);
+    void quitApp();
 
 private:
     ScribbleArea *scribbleArea;
+    QWidget *menuWidget;
+    QPushButton  *btn2Players;
+    QPushButton  *btn3Players;
+    QPushButton  *btnQuit;
+    QLabel *name;
 };
 #endif

@@ -58,7 +58,7 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
     QPixmap pixmapLilypad(":img/img/lilypad.png");
     QPixmap pixmapCrown(":img/img/crown.png");
     QPixmap pixmapWater(":img/img/water.png");
-    painter.drawPixmap(0,0,740,740, pixmapWater);
+    painter.drawPixmap(0,0,width(),height(), pixmapWater);
     for(int i = 0; i < 8; i++){
         for(int j = 0; j < 8; j++){
             if(grid[i][j] == '1'){
