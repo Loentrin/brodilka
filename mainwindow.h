@@ -24,9 +24,9 @@ private slots:
 private:
     ScribbleArea *scribbleArea;
     QWidget *menuWidget;
-    QPushButton  *btn2Players;
-    QPushButton  *btn3Players;
-    QPushButton  *btnQuit;
+    QPushButton *btn2Players;
+    QPushButton *btn3Players;
+    QPushButton *btnQuit;
     QLabel *name;
 };
 #endif

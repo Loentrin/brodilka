@@ -19,6 +19,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void timerEvent(QTimerEvent* event) override;
     //void keyPressEvent(QKeyEvent* event) override;
+    void resizeEvent(QResizeEvent *event) override;
 private:
     int player;
     int canRoll, isRolling;
@@ -28,15 +29,23 @@ private:
     int p1TileX, p1TileY, p2TileX, p2TileY, p3TileX, p3TileY;
     int p1BackDir, p2BackDir, p3BackDir;
 
+    void calculateLayout();
+
+    QRect fieldRect;
+    QRect infoRect;
+    QRect diceRect;
+    int cellSize;
+    int offsetX, offsetY;
+
     QVector<QString> grid = {
-    "11110001",
+    "11210001",
     "10010001",
-    "11011011",
+    "13031011",
     "01001010",
-    "01011010",
-    "01010011",
-    "01011001",
-    "11001111"
+    "02012010",
+    "03030031",
+    "01013001",
+    "11001121"
     };
     /*
     "11100001",
