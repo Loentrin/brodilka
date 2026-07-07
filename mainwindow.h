@@ -1,10 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QLabel>
 #include <QList>
 #include <QMainWindow>
 #include <QPushButton>
-#include <QLabel>
 
 class ScribbleArea;
 

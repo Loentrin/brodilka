@@ -4,8 +4,8 @@
 #include <QColor>
 #include <QImage>
 #include <QPoint>
-#include <QWidget>
 #include <QVector>
+#include <QWidget>
 
 class ScribbleArea : public QWidget
 {
@@ -14,18 +14,25 @@ class ScribbleArea : public QWidget
 public:
     ScribbleArea(QWidget *parent = nullptr);
     int pCount;
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void timerEvent(QTimerEvent* event) override;
+    void timerEvent(QTimerEvent *event) override;
     //void keyPressEvent(QKeyEvent* event) override;
     void resizeEvent(QResizeEvent *event) override;
+
 private:
     int player;
     int canRoll, isRolling;
     int diceValue;
     int diceTimeRemaining, movesRemaining;
-    QPoint p1Pos, p2Pos, p3Pos;
+    QPointF p1CurrentPos, p2CurrentPos, p3CurrentPos;
+    bool isMovingAnimation = false;
+    bool skipTurn[3] = {false, false, false};
+    int streamAnimationStep = 0;
+    float frogSubmersion = 0.0f;
+    int teleportPhase = 0;
     int p1TileX, p1TileY, p2TileX, p2TileY, p3TileX, p3TileY;
     int p1BackDir, p2BackDir, p3BackDir;
 
@@ -37,16 +44,14 @@ private:
     int cellSize;
     int offsetX, offsetY;
 
-    QVector<QString> grid = {
-    "11210001",
-    "10010001",
-    "13031011",
-    "01001010",
-    "02012010",
-    "03030031",
-    "01013001",
-    "11001121"
-    };
+    QVector<QString> grid = {"11210001",
+                             "10010001",
+                             "13031011",
+                             "01001010",
+                             "02012010",
+                             "03030031",
+                             "01013001",
+                             "11001121"};
     /*
     "11100001",
     "10111111",

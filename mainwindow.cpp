@@ -3,21 +3,26 @@
 #include "scribblearea.h"
 
 #include <QApplication>
+#include <QCloseEvent>
 #include <QColorDialog>
 #include <QFileDialog>
 #include <QImageWriter>
 #include <QInputDialog>
 #include <QMenuBar>
 #include <QMessageBox>
-#include <QCloseEvent>
 #include <QVBoxLayout>
 
 //! [0]
-class MenuWidget : public QWidget {
+class MenuWidget : public QWidget
+{
 public:
-    MenuWidget(QWidget *parent = nullptr) : QWidget(parent) {}
+    MenuWidget(QWidget *parent = nullptr)
+        : QWidget(parent)
+    {}
+
 protected:
-    void paintEvent(QPaintEvent *) override {
+    void paintEvent(QPaintEvent *) override
+    {
         QPainter painter(this);
         QPixmap water(":img/img/water.png");
         painter.drawPixmap(rect(), water);
@@ -55,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QVBoxLayout *layout = new QVBoxLayout(menuWidget);
 
-    layout->addWidget(name,0,Qt::AlignCenter);
+    layout->addWidget(name, 0, Qt::AlignCenter);
     layout->addWidget(btn2Players, 0, Qt::AlignCenter);
     layout->addWidget(btn3Players, 0, Qt::AlignCenter);
     layout->addWidget(btnQuit, 0, Qt::AlignCenter);
@@ -71,7 +76,8 @@ MainWindow::MainWindow(QWidget *parent)
     scribbleArea->hide();
 }
 
-void MainWindow::startGame(int players){
+void MainWindow::startGame(int players)
+{
     scribbleArea->pCount = players;
     setCentralWidget(scribbleArea);
     scribbleArea->show();
@@ -82,7 +88,6 @@ void MainWindow::quitApp()
 {
     close();
 }
-
 
 /*void MainWindow::keyPressEvent(QKeyEvent* event)
 {
