@@ -30,9 +30,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setWindowTitle(":3");
     resize(1024, 768);
+    setMinimumSize(300,300);
+
+    isGameActive = false;
 
     menuWidget = new MenuWidget(this);
-    menuWidget->setObjectName("menuWidget");
 
     btn2Players = new QPushButton("Игра для 2 игроков", menuWidget);
     btn3Players = new QPushButton("Игра для 3 игроков", menuWidget);
@@ -40,14 +42,13 @@ MainWindow::MainWindow(QWidget *parent)
 
     QFont titleFont("Comic Sans MS", 36, QFont::Bold);
 
-    btn2Players->setFixedSize(500, 100);
     btn2Players->setFont(titleFont);
     btn2Players->setStyleSheet(" background-color: red");
-    btn3Players->setFixedSize(500, 100);
     btn3Players->setFont(titleFont);
     btn3Players->setStyleSheet(" background-color: orange");
-    btnQuit->setFixedSize(500, 100);
     btnQuit->setFont(titleFont);
+
+
 
     name = new QLabel("Гонка лягушек :3", menuWidget);
     name->setFont(titleFont);
@@ -55,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QVBoxLayout *layout = new QVBoxLayout(menuWidget);
 
-    layout->addWidget(name,0,Qt::AlignCenter);
+    layout->addWidget(name, 0, Qt::AlignCenter);
     layout->addWidget(btn2Players, 0, Qt::AlignCenter);
     layout->addWidget(btn3Players, 0, Qt::AlignCenter);
     layout->addWidget(btnQuit, 0, Qt::AlignCenter);
@@ -75,7 +76,8 @@ void MainWindow::startGame(int players){
     scribbleArea->pCount = players;
     setCentralWidget(scribbleArea);
     scribbleArea->show();
-    menuWidget->deleteLater();
+    isGameActive = true;
+
 }
 
 void MainWindow::quitApp()
@@ -83,23 +85,21 @@ void MainWindow::quitApp()
     close();
 }
 
-
-/*void MainWindow::keyPressEvent(QKeyEvent* event)
+void MainWindow::resizeEvent(QResizeEvent *event)
 {
-    switch (event->key()) {
-    case Qt::Key_S:
-        scribbleArea->pauseBall();
-        break;
-    case Qt::Key_B:
-        scribbleArea->unpauseBall();
-        break;
-    case Qt::Key_Equal:
-        scribbleArea->speedUpBall();
-        break;
-    case Qt::Key_Minus:
-        scribbleArea->slowDownBall();
-        break;
-    default:
-        QWidget::keyPressEvent(event);
+    Q_UNUSED(event)
+    if(isGameActive == false) {
+        updateFontSizes();
     }
-}*/
+
+}
+
+void MainWindow::updateFontSizes()
+{
+    QFont titleFont("Comic Sans MS", qMin(width(), height()) / 15, QFont::Bold);
+
+     name->setFont(titleFont);
+    btn2Players->setFont(titleFont);
+    btn3Players->setFont(titleFont);
+    btnQuit->setFont(titleFont);
+}
