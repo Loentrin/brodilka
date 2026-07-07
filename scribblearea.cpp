@@ -56,6 +56,8 @@ void ScribbleArea::mousePressEvent(QMouseEvent *event)
 void ScribbleArea::paintEvent(QPaintEvent *event)
 //! [13] //! [14]
 {
+    Q_UNUSED(event);
+    calculateLayout();
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -167,7 +169,7 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
                     painter.drawEllipse(cellRect.x() + cellSize * 0.3, cellRect.y() + cellSize * 0.6, cellSize * 0.2, cellSize * 0.15);
                     painter.restore();
                 } else if (cell == '3') {
-                    borderColor = QColor(128, 0, 128); // фиолетовый
+                    borderColor = QColor(120, 0, 120);
                     hasBorder = true;
                 }
 
@@ -179,11 +181,8 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
 
                 if (i == 7 && j == 0) {
                     int crownSize = cellSize * 0.5;
-                    painter.drawPixmap(offsetX + 7 * cellSize + (cellSize - crownSize) / 2,
-                                       (offsetY + 0.2) * cellSize - crownSize * 0.3,
-                                       crownSize,
-                                       crownSize,
-                                       pixmapCrown);
+                    painter.drawPixmap(offsetX + 7 * cellSize + (cellSize - crownSize) / 2, offsetY * cellSize - crownSize * 0.3, crownSize, crownSize, pixmapCrown);
+
                 }
             }
         }
@@ -548,8 +547,8 @@ void ScribbleArea::timerEvent(QTimerEvent *event)
 
 void ScribbleArea::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event);
     calculateLayout();
-    QWidget::resizeEvent(event);
 }
 
 void ScribbleArea::calculateLayout()
@@ -557,16 +556,14 @@ void ScribbleArea::calculateLayout()
     int w = width();
     int h = height();
 
-    int infoWidth = qBound(150, w * 20 / 100, 300);
+    int infoWidth = qBound(150.0, w * 0.2, 300.0);
     infoRect = QRect(w - infoWidth, 0, infoWidth, h);
 
     int fieldWidth = w - infoWidth;
-    int fieldHeight = h;
-    int maxCell = qMin(fieldWidth, fieldHeight) / 8;
-    cellSize = maxCell;
+    cellSize = qMin(fieldWidth, h) / 8;
 
     offsetX = (fieldWidth - cellSize * 8) / 2;
-    offsetY = (fieldHeight - cellSize * 8) / 2;
+    offsetY = (h - cellSize * 8) / 2;
     fieldRect = QRect(offsetX, offsetY, cellSize * 8, cellSize * 8);
 
     int diceSize = qMin(infoWidth * 0.6, h * 0.25);

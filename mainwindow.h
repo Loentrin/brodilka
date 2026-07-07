@@ -12,10 +12,10 @@ class ScribbleArea;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
+protected:
+    void resizeEvent(QResizeEvent *event) override;
 public:
     MainWindow(QWidget *parent = nullptr);
-    //void keyPressEvent(QKeyEvent* event);
 
 private slots:
     void startGame(int players);
@@ -28,5 +28,8 @@ private:
     QPushButton *btn3Players;
     QPushButton *btnQuit;
     QLabel *name;
+
+    void updateFontSizes();
+    bool isGameActive;
 };
 #endif
