@@ -6,6 +6,8 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QPainterPath>
+#include <QVBoxLayout>
+#include <QApplication>
 
 ScribbleArea::ScribbleArea(QWidget *parent)
     : QWidget(parent)
@@ -31,6 +33,37 @@ ScribbleArea::ScribbleArea(QWidget *parent)
     p3TileY = 7;
     p3BackDir = -1;
     startTimer(30);
+
+
+    winMenuWidget = new QWidget(this);
+    winMenuWidget->hide();
+    winMenuWidget->setStyleSheet("background-color: rgba(0, 0, 0, 180); border-radius: 20px;");
+
+    QVBoxLayout *winLayout = new QVBoxLayout(winMenuWidget);
+    winLayout->setSpacing(20);
+    winLayout->setContentsMargins(40, 40, 40, 40);
+
+    winLabel = new QLabel("ПОБЕДА!", winMenuWidget);
+    winLabel->setFont(QFont("Comic Sans MS", 20, QFont::Bold));
+    winLabel->setStyleSheet("color: gold; background: transparent;");
+    winLabel->setAlignment(Qt::AlignCenter);
+
+    restartButton = new QPushButton("Играть снова", winMenuWidget);
+    restartButton->setFont(QFont("Comic Sans MS", 24, QFont::Bold));
+    restartButton->setStyleSheet("background-color: green; color: white; border-radius: 15px; padding: 15px;");
+
+    quitButton = new QPushButton("Выйти", winMenuWidget);
+    quitButton->setFont(QFont("Comic Sans MS", 24, QFont::Bold));
+    quitButton->setStyleSheet("background-color: red; color: white; border-radius: 15px; padding: 15px;");
+
+    winLayout->addWidget(winLabel);
+    winLayout->addWidget(restartButton);
+    winLayout->addWidget(quitButton);
+
+    connect(restartButton, &QPushButton::clicked, this, &ScribbleArea::resetGame);
+    connect(quitButton, &QPushButton::clicked, this, [this]() {
+        QApplication::quit();
+    });
     /*
       0
   3      1
@@ -181,7 +214,7 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
 
                 if (i == 7 && j == 0) {
                     int crownSize = cellSize * 0.5;
-                    painter.drawPixmap(offsetX + 7 * cellSize + (cellSize - crownSize) / 2, offsetY * cellSize - crownSize * 0.3, crownSize, crownSize, pixmapCrown);
+                    painter.drawPixmap(offsetX + 7 * cellSize + (cellSize - crownSize) / 2, offsetY - crownSize * 0.3, crownSize, crownSize, pixmapCrown);
 
                 }
             }
@@ -485,6 +518,14 @@ void ScribbleArea::timerEvent(QTimerEvent *event)
                 int currentTileY = (player == 0) ? p1TileY : ((player == 1) ? p2TileY : p3TileY);
                 QChar currentCell = grid[currentTileX][currentTileY];
 
+                if (currentCell == '5') {
+                    winner = player;
+                    showWinMenu();
+                    killTimer(event->timerId());
+                    update();
+                    return;
+                }
+
                 if (currentCell == '2') {
                     skipTurn[player] = true;
                 }
@@ -516,7 +557,7 @@ void ScribbleArea::timerEvent(QTimerEvent *event)
                 auto canMoveTo = [&](int x, int y) {
                     if (x < 0 || x > 7 || y < 0 || y > 7) return false;
                     QChar c = grid[x][y];
-                    return (c == '1' || c == '2' || c == '3' || c == '4');
+                    return (c == '1' || c == '2' || c == '3' || c == '4' || c =='5');
                 };
 
                 if (player == 0) {
@@ -571,4 +612,51 @@ void ScribbleArea::calculateLayout()
     int diceX = infoRect.x() + (infoWidth - diceSize) / 2;
     int diceY = infoRect.y() + (h - diceSize) / 2;
     diceRect = QRect(diceX, diceY, diceSize, diceSize);
+}
+
+void ScribbleArea::resetGame()
+{
+    player = 0;
+    canRoll = 1;
+    isRolling = 0;
+    diceValue = 1;
+    gameOver = false;
+    winner = -1;
+    isMovingAnimation = false;
+    teleportPhase = 0;
+    frogSubmersion = 0.0f;
+    streamAnimationStep = 0;
+
+    p1TileX = 0; p1TileY = 7; p1BackDir = -1;
+    p2TileX = 0; p2TileY = 7; p2BackDir = -1;
+    p3TileX = 0; p3TileY = 7; p3BackDir = -1;
+
+    p1CurrentPos = QPointF();
+    p2CurrentPos = QPointF();
+    p3CurrentPos = QPointF();
+
+    for (int i = 0; i < 3; i++) {
+        skipTurn[i] = false;
+    }
+
+    winMenuWidget->hide();
+    gameOver = false;
+
+    update();
+}
+void ScribbleArea::showWinMenu()
+{
+    gameOver = true;
+
+    QString winnerText;
+    if (winner == 0) winnerText = "Зелёный игрок";
+    else if (winner == 1) winnerText = "Синий игрок";
+    else if (winner == 2) winnerText = "Оранжевый игрок";
+
+    winLabel->setText(QString("%1\nПОБЕДИЛ!").arg(winnerText));
+
+    winMenuWidget->resize(400, 300);
+    winMenuWidget->move((width() - 400) / 2, (height() - 300) / 2);
+    winMenuWidget->show();
+    winMenuWidget->raise();
 }
