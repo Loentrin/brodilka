@@ -168,7 +168,7 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
                     painter.drawEllipse(cellRect.x() + cellSize * 0.5, cellRect.y() + cellSize * 0.5, cellSize * 0.3, cellSize * 0.2);
                     painter.drawEllipse(cellRect.x() + cellSize * 0.3, cellRect.y() + cellSize * 0.6, cellSize * 0.2, cellSize * 0.15);
                     painter.restore();
-                } else if (cell == '3') {
+                } else if (cell == '3' || cell == '4') {
                     borderColor = QColor(120, 0, 120);
                     hasBorder = true;
                 }
@@ -391,15 +391,15 @@ void ScribbleArea::timerEvent(QTimerEvent *event)
                 int targetBackDir = -1;
 
                 // Определяем точку выхода и жестко задаем направление НАЗАД (откуда пришла)
-                if ((currentTileX == 5 && currentTileY == 1) || (currentTileX == 5 && currentTileY == 3)) {
+                if ((currentTileX == 5 && currentTileY == 1) ) {
                     nextX = 5; nextY = 3;
                     targetBackDir = 1; // Блокирует ЛЕВО. Лягушка гарантированно пойдет на ПРАВО.
                 }
-                else if ((currentTileX == 2 && currentTileY == 3) || (currentTileX == 5 && currentTileY == 3)) {
+                else if ((currentTileX == 2 && currentTileY == 3)) {
                     nextX = 2; nextY = 1;
                     targetBackDir = 2; // Блокирует ПРАВО. Лягушка гарантированно пойдет на ЛЕВО.
                 }
-                else if ((currentTileX == 6 && currentTileY == 4) || (currentTileX == 5 && currentTileY == 3)) {
+                else if ((currentTileX == 6 && currentTileY == 4)) {
                     nextX = 5; nextY = 6;
                     targetBackDir = 3; // Блокирует НИЗ. Лягушка гарантированно пойдет наВВЕРХ.
                 }
@@ -467,9 +467,9 @@ void ScribbleArea::timerEvent(QTimerEvent *event)
     }
     else if (isMovingAnimation) {
         // Обычное плавное перемещение шагами
-        p1CurrentPos += (p1Target - p1CurrentPos) * 0.3;
-        p2CurrentPos += (p2Target - p2CurrentPos) * 0.3;
-        p3CurrentPos += (p3Target - p3CurrentPos) * 0.3;
+        p1CurrentPos += (p1Target - p1CurrentPos) * 0.8;
+        p2CurrentPos += (p2Target - p2CurrentPos) * 0.8;
+        p3CurrentPos += (p3Target - p3CurrentPos) * 0.8;
 
         QPointF current = (player == 0) ? p1CurrentPos : ((player == 1) ? p2CurrentPos : p3CurrentPos);
         QPointF target  = (player == 0) ? p1Target     : ((player == 1) ? p2Target     : p3Target);
@@ -516,7 +516,7 @@ void ScribbleArea::timerEvent(QTimerEvent *event)
                 auto canMoveTo = [&](int x, int y) {
                     if (x < 0 || x > 7 || y < 0 || y > 7) return false;
                     QChar c = grid[x][y];
-                    return (c == '1' || c == '2' || c == '3');
+                    return (c == '1' || c == '2' || c == '3' || c == '4');
                 };
 
                 if (player == 0) {
