@@ -9,8 +9,7 @@
 #include <QVBoxLayout>
 #include <QApplication>
 
-ScribbleArea::ScribbleArea(QWidget *parent)
-    : QWidget(parent)
+ScribbleArea::ScribbleArea(QWidget *parent) : QWidget(parent)
 {
     setAttribute(Qt::WA_StaticContents);
     player = 0;
@@ -41,7 +40,6 @@ ScribbleArea::ScribbleArea(QWidget *parent)
 
     QVBoxLayout *winLayout = new QVBoxLayout(winMenuWidget);
     winLayout->setSpacing(20);
-    winLayout->setContentsMargins(40, 40, 40, 40);
 
     winLabel = new QLabel("ПОБЕДА!", winMenuWidget);
     winLabel->setFont(QFont("Comic Sans MS", 20, QFont::Bold));
@@ -61,8 +59,7 @@ ScribbleArea::ScribbleArea(QWidget *parent)
     winLayout->addWidget(quitButton);
 
     connect(restartButton, &QPushButton::clicked, this, &ScribbleArea::resetGame);
-    connect(quitButton, &QPushButton::clicked, this, [this]() {
-        QApplication::quit();
+    connect(quitButton, &QPushButton::clicked, this, [this]() { QApplication::quit();
     });
     /*
       0
@@ -193,13 +190,6 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
                     hasBorder = true;
                     painter.save();
                     painter.setPen(Qt::NoPen);
-                    painter.setBrush(QBrush(QColor(139, 69, 19, 180))); // Коричневый цвет грязи
-
-                    // Рисуем 3 случайных пятна внутри прямоугольника кувшинки
-                    // Используем координаты ячейки cellRect
-                    painter.drawEllipse(cellRect.x() + cellSize * 0.2, cellRect.y() + cellSize * 0.3, cellSize * 0.25, cellSize * 0.15);
-                    painter.drawEllipse(cellRect.x() + cellSize * 0.5, cellRect.y() + cellSize * 0.5, cellSize * 0.3, cellSize * 0.2);
-                    painter.drawEllipse(cellRect.x() + cellSize * 0.3, cellRect.y() + cellSize * 0.6, cellSize * 0.2, cellSize * 0.15);
                     painter.restore();
                 } else if (cell == '3' || cell == '4') {
                     borderColor = QColor(120, 0, 120);
@@ -533,7 +523,7 @@ void ScribbleArea::timerEvent(QTimerEvent *event)
                 // Если наступили на фиолетовую кувшинку — НЕ меняем игрока, а запускаем фазу 1 телепорта!
                 if (currentCell == '3') {
                     teleportPhase = 1;
-                    frogSubmersion = 0.0f;
+                    frogSubmersion = 0.0;
                     update();
                     return; // Уходим на круг анимации погружения
                 }
@@ -590,6 +580,9 @@ void ScribbleArea::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
     calculateLayout();
+    if(gameOver){
+        updateWinMenuSize();
+    }
 }
 
 void ScribbleArea::calculateLayout()
@@ -624,7 +617,7 @@ void ScribbleArea::resetGame()
     winner = -1;
     isMovingAnimation = false;
     teleportPhase = 0;
-    frogSubmersion = 0.0f;
+    frogSubmersion = 0.0;
     streamAnimationStep = 0;
 
     p1TileX = 0; p1TileY = 7; p1BackDir = -1;
@@ -655,8 +648,42 @@ void ScribbleArea::showWinMenu()
 
     winLabel->setText(QString("%1\nПОБЕДИЛ!").arg(winnerText));
 
-    winMenuWidget->resize(400, 300);
-    winMenuWidget->move((width() - 400) / 2, (height() - 300) / 2);
+    updateWinMenuSize();
     winMenuWidget->show();
     winMenuWidget->raise();
+}
+
+void ScribbleArea::updateWinMenuSize()
+{
+
+    int menuWidth = qMin(width() / 2, 600);
+    int menuHeight = qMin(height() / 2, 400);
+
+    menuWidth = qBound(300, menuWidth, 800);
+    menuHeight = qBound(200, menuHeight, 500);
+
+    winMenuWidget->resize(menuWidth, menuHeight);
+    winMenuWidget->move((width() - menuWidth) / 2, (height() - menuHeight) / 2);
+
+    int fontSize = qMin(menuWidth, menuHeight) / 12;
+    fontSize = qBound(20, fontSize, 60);
+
+    QFont titleFont("Comic Sans MS", fontSize, QFont::Bold);
+    winLabel->setFont(titleFont);
+
+    int buttonFontSize = qMin(menuWidth, menuHeight) / 18;
+    buttonFontSize = qBound(14, buttonFontSize, 40);
+
+    QFont buttonFont("Comic Sans MS", buttonFontSize, QFont::Bold);
+    restartButton->setFont(buttonFont);
+    quitButton->setFont(buttonFont);
+
+    int padding = qMin(menuWidth, menuHeight) / 15;
+    padding = qBound(10, padding, 60);
+
+    QLayout *layout = winMenuWidget->layout();
+    if (layout) {
+        layout->setContentsMargins(padding, padding, padding, padding);
+        layout->setSpacing(padding / 2);
+    }
 }
