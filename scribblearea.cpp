@@ -90,7 +90,7 @@ void ScribbleArea::paintEvent(QPaintEvent *event)
 //! [13] //! [14]
 {
     Q_UNUSED(event);
-    calculateLayout();
+
 
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
@@ -404,10 +404,6 @@ void ScribbleArea::timerEvent(QTimerEvent *event)
     QPointF p2Target(offsetX + p2TileX * cellSize + 0.5f * cellSize, offsetY + p2TileY * cellSize + 0.1f * cellSize);
     QPointF p3Target(offsetX + p3TileX * cellSize + 0.3f * cellSize, offsetY + p3TileY * cellSize + 0.5f * cellSize);
 
-    if (p1CurrentPos.isNull()) {
-        p1CurrentPos = p1Target; p2CurrentPos = p2Target; p3CurrentPos = p3Target;
-    }
-
     // --- КРИТИЧЕСКИЙ ФИКС: АВТОНОМНОЕ УПРАВЛЕНИЕ ТЕЛЕПОРТАЦИЕЙ ---
     if (teleportPhase > 0) {
         int currentTileX = (player == 0) ? p1TileX : ((player == 1) ? p2TileX : p3TileX);
@@ -590,6 +586,10 @@ void ScribbleArea::resizeEvent(QResizeEvent *event)
 {
     Q_UNUSED(event);
     calculateLayout();
+    p1CurrentPos = QPointF(offsetX + p1TileX * cellSize + 0.1f * cellSize, offsetY + p1TileY * cellSize + 0.1f * cellSize);
+    p2CurrentPos = QPointF(offsetX + p2TileX * cellSize + 0.5f * cellSize, offsetY + p2TileY * cellSize + 0.1f * cellSize);
+    p3CurrentPos = QPointF(offsetX + p3TileX * cellSize + 0.3f * cellSize, offsetY + p3TileY * cellSize + 0.5f * cellSize);
+    QWidget::resizeEvent(event);
 }
 
 void ScribbleArea::calculateLayout()
