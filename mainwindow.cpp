@@ -16,9 +16,7 @@
 class MenuWidget : public QWidget
 {
 public:
-    MenuWidget(QWidget *parent = nullptr)
-        : QWidget(parent)
-    {}
+    MenuWidget(QWidget *parent = nullptr): QWidget(parent){}
 
 protected:
     void paintEvent(QPaintEvent *) override
@@ -34,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     , scribbleArea(new ScribbleArea(this))
 {
     setWindowTitle(":3");
-    resize(1024, 768);
+    resize(1000, 800);
     setMinimumSize(300,300);
 
     isGameActive = false;

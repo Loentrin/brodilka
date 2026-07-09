@@ -47,25 +47,26 @@ private:
     int cellSize;
     int offsetX, offsetY;
 
-    bool gameOver = false; // Флаг окончания игры
-    int winner = -1; // Победитель
+    bool gameOver = false;
+    int winner = -1;
 
     QWidget *winMenuWidget;
     QLabel *winLabel;
     QPushButton *restartButton;
     QPushButton *quitButton;
 
-     // Приватный метод сброса состояния
     void showWinMenu();
+    void updateWinMenuSize();
 
-    QVector<QString> grid = {"11210001",
-                             "10010005",
-                             "14031015",
-                             "01001010",
-                             "02012010",
-                             "03040045",
-                             "01013005",
-                             "51001125"};
+    QVector<QString> grid = {
+        "11210001",
+        "10010001",
+        "14031011",
+        "01001010",
+        "02012010",
+        "03040041",
+        "01013001",
+        "51001121"};
     /*
     "11100001",
     "10111111",
