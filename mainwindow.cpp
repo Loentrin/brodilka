@@ -27,9 +27,8 @@ protected:
     }
 };
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , scribbleArea(new ScribbleArea(this))
+// меню
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), scribbleArea(new ScribbleArea(this))
 {
     setWindowTitle(":3");
     resize(1000, 800);
