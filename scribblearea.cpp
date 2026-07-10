@@ -414,9 +414,9 @@ void ScribbleArea::timerEvent(QTimerEvent *event)
         }
     }
     else if (isMovingAnimation) {
-        p1CurrentPos += (p1Target - p1CurrentPos) * 0.8;
-        p2CurrentPos += (p2Target - p2CurrentPos) * 0.8;
-        p3CurrentPos += (p3Target - p3CurrentPos) * 0.8;
+        p1CurrentPos += (p1Target - p1CurrentPos) * 0.6;
+        p2CurrentPos += (p2Target - p2CurrentPos) * 0.6;
+        p3CurrentPos += (p3Target - p3CurrentPos) * 0.6;
 
         QPointF current = (player == 0) ? p1CurrentPos : ((player == 1) ? p2CurrentPos : p3CurrentPos);
         QPointF target  = (player == 0) ? p1Target     : ((player == 1) ? p2Target     : p3Target);
